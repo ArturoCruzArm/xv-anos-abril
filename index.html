@@ -487,6 +487,63 @@
             color: var(--color-text-muted);
         }
 
+        /* ========== Music Player ========== */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(30, 58, 138, 0.4);
+            transition: var(--transition);
+            color: var(--color-white);
+            font-size: 1.5rem;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.5);
+        }
+
+        .music-btn.playing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .music-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: var(--color-dark);
+            color: var(--color-white);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .music-player:hover .music-tooltip {
+            opacity: 1;
+        }
+
         /* ========== Animations ========== */
         @keyframes fadeInDown {
             from {
@@ -721,6 +778,17 @@
         <p class="footer-note">Invitación digital creada con amor por Foro 7</p>
     </footer>
 
+    <!-- Music Player -->
+    <div class="music-player">
+        <span class="music-tooltip">Toca para escuchar la música</span>
+        <button class="music-btn" id="musicBtn" aria-label="Reproducir música">
+            🎵
+        </button>
+        <audio id="bgMusic" loop preload="auto">
+            <source src="musica-fondo.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
     <!-- Countdown Script -->
     <script>
         (function() {
@@ -748,6 +816,36 @@
 
             updateCountdown();
             setInterval(updateCountdown, 1000);
+        })();
+
+        // Music Player
+        (function() {
+            const musicBtn = document.getElementById('musicBtn');
+            const bgMusic = document.getElementById('bgMusic');
+            let isPlaying = false;
+
+            bgMusic.volume = 0.5;
+
+            musicBtn.addEventListener('click', function() {
+                if (isPlaying) {
+                    bgMusic.pause();
+                    musicBtn.textContent = '🎵';
+                    musicBtn.classList.remove('playing');
+                } else {
+                    bgMusic.play().catch(function(e) {
+                        console.log('Autoplay prevented:', e);
+                    });
+                    musicBtn.textContent = '🔊';
+                    musicBtn.classList.add('playing');
+                }
+                isPlaying = !isPlaying;
+            });
+
+            bgMusic.addEventListener('ended', function() {
+                musicBtn.textContent = '🎵';
+                musicBtn.classList.remove('playing');
+                isPlaying = false;
+            });
         })();
     </script>
 </body>
